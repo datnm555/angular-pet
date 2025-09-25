@@ -1,0 +1,33 @@
+<div
+  class="card"
+  [ngClass]="[shadowClass, paddingClass, borderRadiusClass]"
+  [class.hoverable]="hoverable"
+  [class.clickable]="clickable"
+  (click)="onCardClick()">
+
+  <div class="card-header" *ngIf="showHeader && (title || subtitle || customHeader || headerActions)">
+    <ng-container *ngIf="!customHeader; else customHeaderTemplate">
+      <div class="card-header-content">
+        <h3 class="card-title" *ngIf="title">{{ title }}</h3>
+        <p class="card-subtitle" *ngIf="subtitle">{{ subtitle }}</p>
+      </div>
+      <div class="card-header-actions" *ngIf="headerActions">
+        <ng-container *ngTemplateOutlet="headerActions"></ng-container>
+      </div>
+    </ng-container>
+    <ng-template #customHeaderTemplate>
+      <ng-container *ngTemplateOutlet="customHeader"></ng-container>
+    </ng-template>
+  </div>
+
+  <div class="card-body" [class.no-header]="!showHeader || (!title && !subtitle && !customHeader)">
+    <ng-content></ng-content>
+  </div>
+
+  <div class="card-footer" *ngIf="showFooter || customFooter">
+    <ng-container *ngIf="customFooter">
+      <ng-container *ngTemplateOutlet="customFooter"></ng-container>
+    </ng-container>
+    <ng-content select="[card-footer]" *ngIf="!customFooter"></ng-content>
+  </div>
+</div>

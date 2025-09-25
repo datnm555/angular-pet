@@ -1,0 +1,167 @@
+.card {
+  background-color: white;
+  border: 1px solid #e5e7eb;
+  overflow: hidden;
+  transition: all 0.2s ease-in-out;
+}
+
+.card.hoverable:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.card.clickable {
+  cursor: pointer;
+}
+
+.shadow-sm {
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.shadow-md {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.shadow-lg {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.shadow-xl {
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.radius-none {
+  border-radius: 0;
+}
+
+.radius-sm {
+  border-radius: 0.25rem;
+}
+
+.radius-md {
+  border-radius: 0.5rem;
+}
+
+.radius-lg {
+  border-radius: 1rem;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #e5e7eb;
+  background-color: #f9fafb;
+}
+
+.card-header.padding-sm {
+  padding: 0.75rem;
+}
+
+.card-header.padding-md {
+  padding: 1rem 1.5rem;
+}
+
+.card-header.padding-lg {
+  padding: 1.5rem 2rem;
+}
+
+.card-header-content {
+  flex: 1;
+}
+
+.card-title {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.card-subtitle {
+  margin: 0.25rem 0 0 0;
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.card-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.card-body {
+  background-color: white;
+}
+
+.card-body.padding-none {
+  padding: 0;
+}
+
+.card-body.padding-sm {
+  padding: 0.75rem;
+}
+
+.card-body.padding-md {
+  padding: 1.5rem;
+}
+
+.card-body.padding-lg {
+  padding: 2rem;
+}
+
+.card-body.no-header.padding-sm {
+  padding: 0.75rem;
+}
+
+.card-body.no-header.padding-md {
+  padding: 1.5rem;
+}
+
+.card-body.no-header.padding-lg {
+  padding: 2rem;
+}
+
+.padding-none .card-body {
+  padding: 0;
+}
+
+.padding-sm .card-body {
+  padding: 0.75rem;
+}
+
+.padding-md .card-body {
+  padding: 1.5rem;
+}
+
+.padding-lg .card-body {
+  padding: 2rem;
+}
+
+.padding-sm .card-header {
+  padding: 0.75rem;
+}
+
+.padding-md .card-header {
+  padding: 1rem 1.5rem;
+}
+
+.padding-lg .card-header {
+  padding: 1.5rem 2rem;
+}
+
+.padding-sm .card-footer {
+  padding: 0.75rem;
+}
+
+.padding-md .card-footer {
+  padding: 1rem 1.5rem;
+}
+
+.padding-lg .card-footer {
+  padding: 1.5rem 2rem;
+}
+
+.card-footer {
+  border-top: 1px solid #e5e7eb;
+  background-color: #f9fafb;
+}

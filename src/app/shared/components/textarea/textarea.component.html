@@ -1,0 +1,32 @@
+<div class="textarea-wrapper">
+  <label *ngIf="label" [for]="id" class="textarea-label" [class.required]="required">
+    {{ label }}
+    <span *ngIf="required" class="required-star">*</span>
+  </label>
+
+  <textarea
+    [id]="id"
+    [placeholder]="placeholder"
+    [value]="value"
+    [disabled]="disabled"
+    [readonly]="readonly"
+    [required]="required"
+    [rows]="rows"
+    [attr.maxlength]="maxLength"
+    (input)="onTextareaChange($event)"
+    (blur)="onTouched()"
+    class="textarea-field"
+    [class.textarea-error]="showError"
+    [class.resizable]="resizable"
+    [class.no-resize]="!resizable"
+  ></textarea>
+
+  <div class="textarea-footer">
+    <small *ngIf="helpText && !showError" class="help-text">{{ helpText }}</small>
+    <small *ngIf="maxLength" class="character-count">{{ characterCount }}</small>
+  </div>
+
+  <div *ngIf="showError" class="error-messages">
+    <small *ngFor="let error of errors" class="error-text">{{ error }}</small>
+  </div>
+</div>

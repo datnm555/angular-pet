@@ -1,0 +1,129 @@
+<div class="table-container" [class.responsive]="responsive">
+  <table
+    class="table"
+    [class.striped]="striped"
+    [class.bordered]="bordered"
+    [class.hoverable]="hoverable">
+
+    <thead>
+      <tr>
+        <th
+          *ngFor="let column of columns"
+          [style.width]="column.width"
+          [style.text-align]="column.align || 'left'"
+          [class.sortable]="column.sortable"
+          (click)="onSort(column)">
+
+          <div class="header-cell">
+            <span>{{ column.label }}</span>
+            <span *ngIf="column.sortable" class="sort-icon" [ngClass]="getSortIcon(column)">
+              <svg *ngIf="getSortIcon(column) === 'sort-neutral'" width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                <path d="M8 3L11 6H5L8 3Z"/>
+                <path d="M8 13L5 10H11L8 13Z"/>
+              </svg>
+              <svg *ngIf="getSortIcon(column) === 'sort-asc'" width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                <path d="M8 3L11 6H5L8 3Z"/>
+              </svg>
+              <svg *ngIf="getSortIcon(column) === 'sort-desc'" width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                <path d="M8 13L5 10H11L8 13Z"/>
+              </svg>
+            </span>
+          </div>
+        </th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr *ngIf="loading">
+        <td [attr.colspan]="columns.length" class="loading-cell">
+          <div class="spinner"></div>
+          <span>Loading...</span>
+        </td>
+      </tr>
+
+      <tr *ngIf="!loading && paginatedData.length === 0">
+        <td [attr.colspan]="columns.length" class="empty-cell">
+          {{ emptyMessage }}
+        </td>
+      </tr>
+
+      <tr
+        *ngFor="let row of paginatedData; trackBy: trackByIndex"
+        (click)="onRowClick(row)"
+        [class.clickable]="rowClick.observers.length > 0">
+
+        <td
+          *ngFor="let column of columns"
+          [style.text-align]="column.align || 'left'">
+
+          <ng-container *ngIf="!column.template">
+            {{ getCellValue(row, column) }}
+          </ng-container>
+
+          <ng-container *ngIf="column.template">
+            <ng-container *ngTemplateOutlet="column.template; context: { $implicit: row, value: getCellValue(row, column) }"></ng-container>
+          </ng-container>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div *ngIf="paginate && !loading && data.length > 0" class="pagination">
+    <div class="pagination-info">
+      Showing {{ (currentPage * pageSize) + 1 }} - {{ Math.min((currentPage + 1) * pageSize, data.length) }} of {{ data.length }}
+    </div>
+
+    <div class="pagination-controls">
+      <select (change)="onPageSizeChange($event)" class="page-size-select">
+        <option *ngFor="let size of pageSizeOptions" [value]="size" [selected]="size === pageSize">
+          {{ size }} per page
+        </option>
+      </select>
+
+      <div class="pagination-buttons">
+        <button
+          *ngIf="showFirstLastButtons"
+          (click)="onPageChange(0)"
+          [disabled]="currentPage === 0"
+          class="pagination-btn">
+          First
+        </button>
+
+        <button
+          (click)="onPageChange(currentPage - 1)"
+          [disabled]="currentPage === 0"
+          class="pagination-btn">
+          Previous
+        </button>
+
+        <button
+          *ngFor="let page of pageNumbers"
+          (click)="onPageChange(page)"
+          [class.active]="page === currentPage"
+          class="pagination-btn page-number"
+          [class.hidden]="pageNumbers.length > 10 && Math.abs(page - currentPage) > 2 && page !== 0 && page !== totalPages - 1">
+          {{ page + 1 }}
+        </button>
+
+        <button
+          (click)="onPageChange(currentPage + 1)"
+          [disabled]="currentPage === totalPages - 1"
+          class="pagination-btn">
+          Next
+        </button>
+
+        <button
+          *ngIf="showFirstLastButtons"
+          (click)="onPageChange(totalPages - 1)"
+          [disabled]="currentPage === totalPages - 1"
+          class="pagination-btn">
+          Last
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #defaultLoadingTemplate>
+  <div class="spinner"></div>
+</ng-template>

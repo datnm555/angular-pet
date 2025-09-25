@@ -1,0 +1,28 @@
+<div class="input-wrapper">
+  <label *ngIf="label" [for]="id" class="input-label" [class.required]="required">
+    {{ label }}
+    <span *ngIf="required" class="required-star">*</span>
+  </label>
+
+  <input
+    [id]="id"
+    [type]="type"
+    [placeholder]="placeholder"
+    [value]="value"
+    [disabled]="disabled"
+    [readonly]="readonly"
+    [required]="required"
+    (input)="onInputChange($event)"
+    (blur)="onTouched()"
+    class="input-field"
+    [class.input-error]="showError"
+  />
+
+  <small *ngIf="helpText && !showError" class="help-text">{{ helpText }}</small>
+
+  <div *ngIf="showError" class="error-messages">
+    <small *ngFor="let error of errors" class="error-text">{{ error }}</small>
+  </div>
+
+  <small *ngIf="errorMessage" class="error-text">{{ errorMessage }}</small>
+</div>
