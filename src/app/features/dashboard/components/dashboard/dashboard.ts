@@ -10,14 +10,30 @@ import { Auth, User } from '../../../../core/services/auth';
 })
 export class DashboardComponent implements OnInit {
   currentUser: User | null = null;
+  sidebarOpen: boolean = true;
+  pageTitle: string = 'Dashboard';
 
   constructor(
-    private router: Router,
+    public router: Router,
     private authService: Auth
   ) {}
 
   ngOnInit() {
     this.currentUser = this.authService.currentUserValue;
+    this.checkScreenSize();
+    window.addEventListener('resize', () => this.checkScreenSize());
+  }
+
+  toggleSidebar() {
+    this.sidebarOpen = !this.sidebarOpen;
+  }
+
+  closeSidebar() {
+    this.sidebarOpen = false;
+  }
+
+  private checkScreenSize() {
+    this.sidebarOpen = window.innerWidth > 768;
   }
 
   logout() {

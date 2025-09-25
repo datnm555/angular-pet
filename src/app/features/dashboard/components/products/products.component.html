@@ -1,0 +1,62 @@
+<div class="products-container">
+  <div class="page-header">
+    <h2>Products Management</h2>
+    <app-button variant="primary" (btnClick)="addProduct()">
+      Add New Product
+    </app-button>
+  </div>
+
+  <app-card>
+    <div class="filters-section">
+      <div class="search-bar">
+        <input
+          type="text"
+          placeholder="Search products by name, category, price, or status..."
+          class="search-input"
+          (input)="onSearch($event)"
+        />
+      </div>
+
+      <div class="stats-summary">
+        <div class="stat-item">
+          <span class="stat-label">Total Products:</span>
+          <span class="stat-value">{{ products.length }}</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">In Stock:</span>
+          <span class="stat-value success">{{ getInStockCount() }}</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Low Stock:</span>
+          <span class="stat-value warning">{{ getLowStockCount() }}</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Out of Stock:</span>
+          <span class="stat-value danger">{{ getOutOfStockCount() }}</span>
+        </div>
+      </div>
+    </div>
+
+    <app-table
+      [columns]="columns"
+      [data]="filteredProducts"
+      [loading]="loading"
+      [striped]="true"
+      [hoverable]="true"
+      [paginate]="true"
+      [pageSize]="10"
+      (sort)="onSort($event)"
+      (rowClick)="onRowClick($event)">
+
+      <ng-template #priceTemplate let-product>
+        {{ formatPrice(product.price) }}
+      </ng-template>
+
+      <ng-template #statusTemplate let-product>
+        <span [class]="'status-badge ' + getStatusClass(product.status)">
+          {{ product.status }}
+        </span>
+      </ng-template>
+    </app-table>
+  </app-card>
+</div>

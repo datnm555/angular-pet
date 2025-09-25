@@ -1,0 +1,31 @@
+<div class="users-container">
+  <div class="page-header">
+    <h2>Users Management</h2>
+    <app-button variant="primary" (btnClick)="addUser()">
+      Add New User
+    </app-button>
+  </div>
+
+  <app-card>
+    <div class="search-bar">
+      <input
+        type="text"
+        placeholder="Search users by name, email, role, or status..."
+        class="search-input"
+        (input)="onSearch($event)"
+      />
+    </div>
+
+    <app-table
+      [columns]="columns"
+      [data]="filteredUsers"
+      [loading]="loading"
+      [striped]="true"
+      [hoverable]="true"
+      [paginate]="true"
+      [pageSize]="10"
+      (sort)="onSort($event)"
+      (rowClick)="onRowClick($event)">
+    </app-table>
+  </app-card>
+</div>

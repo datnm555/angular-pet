@@ -1,0 +1,42 @@
+<aside class="sidebar" [class.sidebar-open]="isOpen" [class.sidebar-closed]="!isOpen">
+  <div class="sidebar-header">
+    <div class="logo">
+      <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="32" height="32" rx="8" fill="#3b82f6"/>
+        <path d="M16 8L22 14L16 20L10 14L16 8Z" fill="white"/>
+      </svg>
+      <span class="logo-text" *ngIf="isOpen">Angular App</span>
+    </div>
+  </div>
+
+  <nav class="sidebar-nav">
+    <ul class="nav-list">
+      <li *ngFor="let item of menuItems" class="nav-item">
+        <a
+          class="nav-link"
+          [class.active]="isActive(item.route)"
+          (click)="navigate(item.route)"
+          [title]="item.label">
+
+          <svg class="nav-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path [attr.d]="item.icon" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+
+          <span class="nav-text" *ngIf="isOpen">{{ item.label }}</span>
+        </a>
+      </li>
+    </ul>
+  </nav>
+
+  <div class="sidebar-footer" *ngIf="isOpen">
+    <div class="sidebar-footer-content">
+      <small class="version">Version 1.0.0</small>
+    </div>
+  </div>
+</aside>
+
+<div class="sidebar-overlay"
+     *ngIf="isOpen"
+     (click)="closeSidebar.emit()"
+     [class.visible]="isOpen">
+</div>

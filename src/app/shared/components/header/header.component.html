@@ -1,0 +1,25 @@
+<header class="header">
+  <div class="header-left">
+    <button class="menu-toggle" (click)="toggleMenu()" aria-label="Toggle menu">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M3 12H21M3 6H21M3 18H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+    <h1 class="header-title">{{ title }}</h1>
+  </div>
+
+  <div class="header-right">
+    <div class="user-info">
+      <span class="user-name">{{ currentUser?.username || 'User' }}</span>
+      <div class="user-avatar">
+        {{ (currentUser?.username || 'U')[0].toUpperCase() }}
+      </div>
+    </div>
+    <button class="logout-btn" (click)="logout()">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M7 17H3C2.44772 17 2 16.5523 2 16V4C2 3.44772 2.44772 3 3 3H7M14 17L18 13M18 13L14 9M18 13H7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span>Logout</span>
+    </button>
+  </div>
+</header>

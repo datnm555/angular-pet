@@ -1,92 +1,119 @@
-<div class="dashboard-container">
-  <header class="dashboard-header">
-    <div class="header-content">
-      <h1>Dashboard</h1>
-      <div class="user-section">
-        @if (currentUser) {
-          <span class="welcome-text">Welcome, {{ currentUser.username }}!</span>
-          <button class="btn btn-logout" (click)="logout()">Logout</button>
-        }
-      </div>
-    </div>
-  </header>
+<div class="dashboard-layout">
+  <app-header
+    [title]="pageTitle"
+    (menuToggle)="toggleSidebar()">
+  </app-header>
 
-  <main class="dashboard-main">
-    <div class="dashboard-content">
-      <div class="stats-grid">
-        <div class="stat-card">
-          <div class="stat-icon">📊</div>
-          <div class="stat-content">
-            <h3>Total Users</h3>
-            <p class="stat-value">1,234</p>
-            <p class="stat-change positive">+12.5%</p>
+  <app-sidebar
+    [isOpen]="sidebarOpen"
+    (closeSidebar)="closeSidebar()">
+  </app-sidebar>
+
+  <main class="main-content" [class.sidebar-open]="sidebarOpen">
+    <div class="content-wrapper">
+      <router-outlet></router-outlet>
+
+      <!-- Default dashboard content when no child route is active -->
+      @if (router.url === '/dashboard') {
+        <div class="dashboard-home">
+          <div class="welcome-section">
+            <h2 class="welcome-title">Welcome back, {{ currentUser?.username }}!</h2>
+            <p class="welcome-subtitle">Here's what's happening with your application today.</p>
           </div>
-        </div>
 
-        <div class="stat-card">
-          <div class="stat-icon">💰</div>
-          <div class="stat-content">
-            <h3>Revenue</h3>
-            <p class="stat-value">$45,678</p>
-            <p class="stat-change positive">+8.2%</p>
-          </div>
-        </div>
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-icon users">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="9" cy="7" r="4"></circle>
+                  <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                  <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                </svg>
+              </div>
+              <div class="stat-content">
+                <h3 class="stat-value">1,234</h3>
+                <p class="stat-label">Total Users</p>
+              </div>
+            </div>
 
-        <div class="stat-card">
-          <div class="stat-icon">📈</div>
-          <div class="stat-content">
-            <h3>Growth</h3>
-            <p class="stat-value">23.4%</p>
-            <p class="stat-change positive">+3.1%</p>
-          </div>
-        </div>
+            <div class="stat-card">
+              <div class="stat-icon products">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                  <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                  <line x1="12" y1="22.08" x2="12" y2="12"></line>
+                </svg>
+              </div>
+              <div class="stat-content">
+                <h3 class="stat-value">456</h3>
+                <p class="stat-label">Products</p>
+              </div>
+            </div>
 
-        <div class="stat-card">
-          <div class="stat-icon">🎯</div>
-          <div class="stat-content">
-            <h3>Conversion</h3>
-            <p class="stat-value">18.9%</p>
-            <p class="stat-change negative">-2.3%</p>
-          </div>
-        </div>
-      </div>
+            <div class="stat-card">
+              <div class="stat-icon revenue">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="12" y1="1" x2="12" y2="23"></line>
+                  <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                </svg>
+              </div>
+              <div class="stat-content">
+                <h3 class="stat-value">$12,345</h3>
+                <p class="stat-label">Revenue</p>
+              </div>
+            </div>
 
-      <div class="recent-section">
-        <h2>Recent Activity</h2>
-        <div class="activity-list">
-          <div class="activity-item">
-            <div class="activity-icon">🔔</div>
-            <div class="activity-content">
-              <p class="activity-title">New user registration</p>
-              <p class="activity-time">2 minutes ago</p>
+            <div class="stat-card">
+              <div class="stat-icon growth">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+                  <polyline points="17 6 23 6 23 12"></polyline>
+                </svg>
+              </div>
+              <div class="stat-content">
+                <h3 class="stat-value">+23%</h3>
+                <p class="stat-label">Growth</p>
+              </div>
             </div>
           </div>
 
-          <div class="activity-item">
-            <div class="activity-icon">💬</div>
-            <div class="activity-content">
-              <p class="activity-title">New comment on post #123</p>
-              <p class="activity-time">15 minutes ago</p>
-            </div>
-          </div>
-
-          <div class="activity-item">
-            <div class="activity-icon">📝</div>
-            <div class="activity-content">
-              <p class="activity-title">Article published</p>
-              <p class="activity-time">1 hour ago</p>
-            </div>
-          </div>
-
-          <div class="activity-item">
-            <div class="activity-icon">⚙️</div>
-            <div class="activity-content">
-              <p class="activity-title">System update completed</p>
-              <p class="activity-time">3 hours ago</p>
+          <div class="recent-activity">
+            <h3>Recent Activity</h3>
+            <div class="activity-list">
+              <div class="activity-item">
+                <div class="activity-icon">
+                  <div class="dot blue"></div>
+                </div>
+                <div class="activity-content">
+                  <p class="activity-text">New user registered</p>
+                  <span class="activity-time">2 minutes ago</span>
+                </div>
+              </div>
+              <div class="activity-item">
+                <div class="activity-icon">
+                  <div class="dot green"></div>
+                </div>
+                <div class="activity-content">
+                  <p class="activity-text">Product added to inventory</p>
+                  <span class="activity-time">15 minutes ago</span>
+                </div>
+              </div>
+              <div class="activity-item">
+                <div class="activity-icon">
+                  <div class="dot yellow"></div>
+                </div>
+                <div class="activity-content">
+                  <p class="activity-text">System update completed</p>
+                  <span class="activity-time">1 hour ago</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      }
     </div>
   </main>
+
+  <app-footer></app-footer>
 </div>
