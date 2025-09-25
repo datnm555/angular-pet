@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SharedModule } from '../../../../shared/shared-module';
+import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { TableColumn } from '../../../../shared/components/table/table.component';
 
 interface User {
@@ -15,7 +16,7 @@ interface User {
 @Component({
   selector: 'app-users',
   standalone: true,
-  imports: [CommonModule, SharedModule],
+  imports: [CommonModule, SharedModule, ReactiveFormsModule],
   templateUrl: './users.component.html',
   styleUrls: ['./users.component.css']
 })
@@ -25,6 +26,15 @@ export class UsersComponent implements OnInit {
   loading = false;
   searchTerm = '';
 
+  // Modal state
+  showAddUserModal = false;
+  addUserForm: FormGroup;
+  submitting = false;
+
+  // Alert state
+  showSuccessAlert = false;
+  successMessage = '';
+
   columns: TableColumn[] = [
     { key: 'id', label: 'ID', sortable: true, width: '80px' },
     { key: 'name', label: 'Name', sortable: true },
@@ -33,6 +43,15 @@ export class UsersComponent implements OnInit {
     { key: 'status', label: 'Status', sortable: true, width: '100px' },
     { key: 'joinDate', label: 'Join Date', sortable: true, width: '150px' }
   ];
+
+  constructor(private fb: FormBuilder) {
+    this.addUserForm = this.fb.group({
+      name: ['', [Validators.required, Validators.minLength(3)]],
+      email: ['', [Validators.required, Validators.email]],
+      role: ['User', [Validators.required]],
+      status: ['Active', [Validators.required]]
+    });
+  }
 
   ngOnInit(): void {
     this.loadUsers();
@@ -92,7 +111,50 @@ export class UsersComponent implements OnInit {
   }
 
   addUser(): void {
-    console.log('Add new user');
+    this.showAddUserModal = true;
+    this.addUserForm.reset({
+      name: '',
+      email: '',
+      role: 'User',
+      status: 'Active'
+    });
+  }
+
+  closeAddUserModal(): void {
+    this.showAddUserModal = false;
+    this.addUserForm.reset();
+    this.submitting = false;
+  }
+
+  submitAddUser(): void {
+    if (this.addUserForm.valid) {
+      this.submitting = true;
+
+      // Simulate API call
+      setTimeout(() => {
+        const newUser: User = {
+          id: this.users.length + 1,
+          name: this.addUserForm.value.name,
+          email: this.addUserForm.value.email,
+          role: this.addUserForm.value.role,
+          status: this.addUserForm.value.status,
+          joinDate: new Date()
+        };
+
+        this.users.unshift(newUser);
+        this.filterUsers();
+        this.submitting = false;
+        this.closeAddUserModal();
+
+        // Show success message
+        this.showSuccessMessage(`User "${newUser.name}" has been added successfully!`);
+      }, 1000);
+    } else {
+      // Mark all fields as touched to show validation errors
+      Object.keys(this.addUserForm.controls).forEach(key => {
+        this.addUserForm.get(key)?.markAsTouched();
+      });
+    }
   }
 
   editUser(user: User): void {
@@ -101,5 +163,19 @@ export class UsersComponent implements OnInit {
 
   deleteUser(user: User): void {
     console.log('Delete user:', user);
+  }
+
+  showSuccessMessage(message: string): void {
+    this.successMessage = message;
+    this.showSuccessAlert = true;
+
+    // Auto-hide after 5 seconds
+    setTimeout(() => {
+      this.showSuccessAlert = false;
+    }, 5000);
+  }
+
+  dismissAlert(): void {
+    this.showSuccessAlert = false;
   }
 }
