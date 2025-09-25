@@ -3,15 +3,7 @@ import { CommonModule } from '@angular/common';
 import { SharedModule } from '../../../../shared/shared-module';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { TableColumn } from '../../../../shared/components/table/table.component';
-
-interface User {
-  id: number;
-  name: string;
-  email: string;
-  role: string;
-  status: string;
-  joinDate: Date;
-}
+import { UserService, User } from '../../../../core/services/user.service';
 
 @Component({
   selector: 'app-users',
@@ -26,30 +18,33 @@ export class UsersComponent implements OnInit {
   loading = false;
   searchTerm = '';
 
-  // Modal state
+  // Modal states
   showAddUserModal = false;
+  showUserDetailModal = false;
   addUserForm: FormGroup;
   submitting = false;
+  selectedUser: User | null = null;
+  loadingUserDetails = false;
 
   // Alert state
   showSuccessAlert = false;
-  successMessage = '';
+  showErrorAlert = false;
+  alertMessage = '';
 
   columns: TableColumn[] = [
     { key: 'id', label: 'ID', sortable: true, width: '80px' },
     { key: 'name', label: 'Name', sortable: true },
     { key: 'email', label: 'Email', sortable: true },
-    { key: 'role', label: 'Role', sortable: true, width: '120px' },
-    { key: 'status', label: 'Status', sortable: true, width: '100px' },
-    { key: 'joinDate', label: 'Join Date', sortable: true, width: '150px' }
+    { key: 'createdAt', label: 'Created Date', sortable: true, width: '150px' }
   ];
 
-  constructor(private fb: FormBuilder) {
+  constructor(
+    private fb: FormBuilder,
+    private userService: UserService
+  ) {
     this.addUserForm = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(3)]],
       email: ['', [Validators.required, Validators.email]],
-      role: ['User', [Validators.required]],
-      status: ['Active', [Validators.required]]
     });
   }
 
@@ -59,21 +54,22 @@ export class UsersComponent implements OnInit {
 
   loadUsers(): void {
     this.loading = true;
-    // Simulate API call
-    setTimeout(() => {
-      this.users = [
-        { id: 1, name: 'John Doe', email: 'john@example.com', role: 'Admin', status: 'Active', joinDate: new Date('2024-01-15') },
-        { id: 2, name: 'Jane Smith', email: 'jane@example.com', role: 'User', status: 'Active', joinDate: new Date('2024-02-20') },
-        { id: 3, name: 'Bob Johnson', email: 'bob@example.com', role: 'User', status: 'Inactive', joinDate: new Date('2024-03-10') },
-        { id: 4, name: 'Alice Brown', email: 'alice@example.com', role: 'Moderator', status: 'Active', joinDate: new Date('2024-01-25') },
-        { id: 5, name: 'Charlie Wilson', email: 'charlie@example.com', role: 'User', status: 'Active', joinDate: new Date('2024-04-05') },
-        { id: 6, name: 'Diana Martinez', email: 'diana@example.com', role: 'Admin', status: 'Active', joinDate: new Date('2024-02-15') },
-        { id: 7, name: 'Edward Davis', email: 'edward@example.com', role: 'User', status: 'Inactive', joinDate: new Date('2024-03-20') },
-        { id: 8, name: 'Fiona Garcia', email: 'fiona@example.com', role: 'Moderator', status: 'Active', joinDate: new Date('2024-01-30') }
-      ];
-      this.filteredUsers = [...this.users];
-      this.loading = false;
-    }, 1000);
+    this.showErrorAlert = false;
+
+    this.userService.getAllUsers().subscribe({
+      next: (users) => {
+        this.users = users.map(user => ({
+          ...user
+        }));
+        this.filteredUsers = [...this.users];
+        this.loading = false;
+      },
+      error: (error) => {
+        this.loading = false;
+        this.showError('Failed to load users. Please try again.');
+        console.error('Error loading users:', error);
+      }
+    });
   }
 
   onSearch(event: any): void {
@@ -86,10 +82,8 @@ export class UsersComponent implements OnInit {
       this.filteredUsers = [...this.users];
     } else {
       this.filteredUsers = this.users.filter(user =>
-        user.name.toLowerCase().includes(this.searchTerm) ||
-        user.email.toLowerCase().includes(this.searchTerm) ||
-        user.role.toLowerCase().includes(this.searchTerm) ||
-        user.status.toLowerCase().includes(this.searchTerm)
+        user.name?.toLowerCase().includes(this.searchTerm) ||
+        user.email?.toLowerCase().includes(this.searchTerm)
       );
     }
   }
@@ -107,7 +101,32 @@ export class UsersComponent implements OnInit {
   }
 
   onRowClick(user: User): void {
-    console.log('User clicked:', user);
+    this.viewUserDetails(user.id);
+  }
+
+  viewUserDetails(userId: bigint): void {
+    this.loadingUserDetails = true;
+    this.showUserDetailModal = true;
+    this.selectedUser = null;
+
+    this.userService.getUserById(userId).subscribe({
+      next: (user) => {
+        this.selectedUser = user;
+        this.loadingUserDetails = false;
+      },
+      error: (error) => {
+        this.loadingUserDetails = false;
+        this.showError('Failed to load user details.');
+        this.closeUserDetailModal();
+        console.error('Error loading user details:', error);
+      }
+    });
+  }
+
+  closeUserDetailModal(): void {
+    this.showUserDetailModal = false;
+    this.selectedUser = null;
+    this.loadingUserDetails = false;
   }
 
   addUser(): void {
@@ -116,7 +135,10 @@ export class UsersComponent implements OnInit {
       name: '',
       email: '',
       role: 'User',
-      status: 'Active'
+      status: 'Active',
+      phone: '',
+      department: '',
+      address: ''
     });
   }
 
@@ -130,25 +152,24 @@ export class UsersComponent implements OnInit {
     if (this.addUserForm.valid) {
       this.submitting = true;
 
-      // Simulate API call
-      setTimeout(() => {
-        const newUser: User = {
-          id: this.users.length + 1,
-          name: this.addUserForm.value.name,
-          email: this.addUserForm.value.email,
-          role: this.addUserForm.value.role,
-          status: this.addUserForm.value.status,
-          joinDate: new Date()
-        };
+      const newUser = {
+        ...this.addUserForm.value,
+        createdAt: new Date().toISOString()
+      };
 
-        this.users.unshift(newUser);
-        this.filterUsers();
-        this.submitting = false;
-        this.closeAddUserModal();
-
-        // Show success message
-        this.showSuccessMessage(`User "${newUser.name}" has been added successfully!`);
-      }, 1000);
+      this.userService.createUser(newUser).subscribe({
+        next: (user) => {
+          this.submitting = false;
+          this.closeAddUserModal();
+          this.showSuccess(`User "${user.name}" has been added successfully!`);
+          this.loadUsers(); // Refresh the list
+        },
+        error: (error) => {
+          this.submitting = false;
+          this.showError('Failed to add user. Please try again.');
+          console.error('Error creating user:', error);
+        }
+      });
     } else {
       // Mark all fields as touched to show validation errors
       Object.keys(this.addUserForm.controls).forEach(key => {
@@ -158,16 +179,29 @@ export class UsersComponent implements OnInit {
   }
 
   editUser(user: User): void {
+    // TODO: Implement edit functionality
     console.log('Edit user:', user);
   }
 
-  deleteUser(user: User): void {
-    console.log('Delete user:', user);
+  deleteUser(userId: bigint): void {
+    if (confirm('Are you sure you want to delete this user?')) {
+      this.userService.deleteUser(userId).subscribe({
+        next: () => {
+          this.showSuccess('User deleted successfully!');
+          this.loadUsers(); // Refresh the list
+        },
+        error: (error) => {
+          this.showError('Failed to delete user. Please try again.');
+          console.error('Error deleting user:', error);
+        }
+      });
+    }
   }
 
-  showSuccessMessage(message: string): void {
-    this.successMessage = message;
+  showSuccess(message: string): void {
+    this.alertMessage = message;
     this.showSuccessAlert = true;
+    this.showErrorAlert = false;
 
     // Auto-hide after 5 seconds
     setTimeout(() => {
@@ -175,7 +209,29 @@ export class UsersComponent implements OnInit {
     }, 5000);
   }
 
+  showError(message: string): void {
+    this.alertMessage = message;
+    this.showErrorAlert = true;
+    this.showSuccessAlert = false;
+
+    // Auto-hide after 5 seconds
+    setTimeout(() => {
+      this.showErrorAlert = false;
+    }, 5000);
+  }
+
   dismissAlert(): void {
     this.showSuccessAlert = false;
+    this.showErrorAlert = false;
+  }
+
+  formatDate(dateString: string): string {
+    if (!dateString) return '-';
+    const date = new Date(dateString);
+    return date.toLocaleDateString();
+  }
+
+  refreshData(): void {
+    this.loadUsers();
   }
 }
